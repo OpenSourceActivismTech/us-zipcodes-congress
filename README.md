@@ -12,3 +12,4 @@ Caveats:
 
 - [2016 US Gazetteer](https://www.census.gov/geo/maps-data/data/gazetteer2016.html)
 - [2010 ZCTA Relationships](https://www.census.gov/geo/maps-data/data/zcta_rel_overview.html)
+- [Guam Zip Codes](http://mcog.guam.gov/guam_zip_codes.html)

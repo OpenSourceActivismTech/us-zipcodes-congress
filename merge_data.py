@@ -47,6 +47,25 @@ def append_missing_zips(zccd, states_list, fips):
                 'cd': '0' # at-large
             })
 
+    # also include zipcodes from US Minor and Outlying Islands
+    # which are not included in the zcta_county_rel file
+    # these are copied from govt websites as available
+    missing_islands = {
+        'AS': ['96799'],
+        'GU': ['96910', '96913', '96915', '96916', '96917', '96921', '96928', '96929', '96931', '96932'],
+        'MP': ['96950', '96951', '96952', ],
+        'VI': ['00801', '00802', '00820', '00823', '00824', '00830', '00831','00841', '00840', '00850', '00851',]
+    }
+
+    for (abbr, zcta_list) in missing_islands.items():
+        for z in zcta_list:
+            zccd.append({
+                    'zcta': z,
+                    'state_fips': fips_dict_invert[abbr],
+                    'state_abbr': abbr,
+                    'cd': '0', # at-large
+                })
+
     return zccd
 
 def fips_to_state(zccd, fips):
