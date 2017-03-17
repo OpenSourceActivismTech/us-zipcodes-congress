@@ -49,13 +49,24 @@ def append_missing_zips(zccd, states_list, fips):
 
     return zccd
 
-
 def fips_to_state(zccd, fips):
     # append state abbreviation from 
     merged = {}
     for row in zccd:
         row['state_abbr'] = fips[row['state_fips']]
     return zccd
+
+def remove_district_padding(zccd):
+    cleaned = []
+    for row in zccd:
+        if row['house_district'] == 'null':
+            # natl_zccd_delim includes several rows with 'null' for uninhabited areas in Maine
+            # skip them
+            continue
+        row['house_district'] = str(int(row['house_district']))
+        # do this weird conversion to get rid of zero padding
+        cleaned.append(row)
+    return cleaned
 
 if __name__ == "__main__":
     # load state FIPS codes
@@ -68,8 +79,11 @@ if __name__ == "__main__":
     at_large_states = ['AK', 'DE', 'MT', 'ND', 'SD', 'VT', 'WY', 'PR', 'DC']
     zccd_complete = append_missing_zips(zccd_missing, at_large_states, fips)
 
+    # clean output
+    zccd_cleaned = remove_district_padding(zccd_complete)
+
     # re-sort by state FIPS code
-    zccd_sorted = sorted(zccd_complete, key=lambda k: k['state_fips'])
+    zccd_sorted = sorted(zccd_cleaned, key=lambda k: k['state_fips'])
 
     # insert state abbreviation column
     zccd_named = fips_to_state(zccd_sorted, fips)
