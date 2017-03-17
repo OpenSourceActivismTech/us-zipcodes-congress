@@ -8,7 +8,7 @@ def load_zccd(fn):
     column_map = {
         'State': 'state_fips',
         'ZCTA': 'zcta',
-        'Congressional District': 'house_district'
+        'Congressional District': 'cd'
     }
 
     zccd = utils.load_csv_columns(fn, column_map, skip=1)
@@ -44,7 +44,7 @@ def append_missing_zips(zccd, states_list, fips):
             zccd.append({
                 'zcta': z['zcta'],
                 'state_fips': z['state_fips'],
-                'house_district': '0' # at-large
+                'cd': '0' # at-large
             })
 
     return zccd
@@ -59,11 +59,11 @@ def fips_to_state(zccd, fips):
 def remove_district_padding(zccd):
     cleaned = []
     for row in zccd:
-        if row['house_district'] == 'null':
+        if row['cd'] == 'null':
             # natl_zccd_delim includes several rows with 'null' for uninhabited areas in Maine
             # skip them
             continue
-        row['house_district'] = str(int(row['house_district']))
+        row['cd'] = str(int(row['cd']))
         # do this weird conversion to get rid of zero padding
         cleaned.append(row)
     return cleaned
@@ -89,4 +89,4 @@ if __name__ == "__main__":
     zccd_named = fips_to_state(zccd_sorted, fips)
 
     # write output
-    utils.csv_writer('zccd.csv', zccd_named, ['state_fips', 'state_abbr', 'zcta', 'house_district'])
+    utils.csv_writer('zccd.csv', zccd_named, ['state_fips', 'state_abbr', 'zcta', 'cd'])
