@@ -34,7 +34,7 @@ def load_csv_columns(filename, column_names=None, skip=0, delimiter=',', quoting
         columns = {}
         for (i, h) in enumerate(headers):
             h = h.strip()
-            if h in column_names or not column_names:
+            if (not column_names) or h in column_names:
                 columns[i] = h
         log.info("headers", headers)
         log.info("columns", column_names)
@@ -44,7 +44,10 @@ def load_csv_columns(filename, column_names=None, skip=0, delimiter=',', quoting
             if not line:
                 continue
             for (column, index) in columns.items():
-                rename = column_names[index]
+                if column_names:
+                    rename = column_names[index]
+                else:
+                    rename = headers[column]
                 value = line[column].strip()
                 d[rename] = value
             r.append(d)

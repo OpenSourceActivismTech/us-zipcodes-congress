@@ -1,7 +1,7 @@
 all: clean zccd.csv
 
 clean:
-	rm -f raw/*.txt raw/*.zip
+	rm -f raw/*
 	rm -f zccd.csv
 
 zccd.csv: raw/natl_zccd_delim.txt  raw/zcta_county_rel_10.txt raw/state_fips.txt
@@ -20,3 +20,14 @@ raw/zcta_county_rel_10.txt:
 # FIPS State/Territory codes to names
 raw/state_fips.txt:
 	curl 'http://www2.census.gov/geo/docs/reference/state.txt' -o $@
+
+# test against previously released data from Sunlight Foundation
+test: raw/old_sunlight_districts.csv
+	python test.py
+
+raw/old_sunlight_districts.csv:
+	curl 'https://raw.githubusercontent.com/spacedogXYZ/call-power/0ee10f026d2c0758e49a786b43b980c1c2d1d4c7/call_server/political_data/data/us_districts.csv' -o $@.download
+	mv $@.download $@.raw
+	echo 'zipcode,state,house_district' >> raw/old_sunlight_headers.txt
+	cat raw/old_sunlight_headers.txt $@.raw > $@
+	rm raw/old_sunlight_headers.txt $@.raw
