@@ -25,12 +25,10 @@ def load_fips(fn):
         fips_dict[row['state_fips']] = row['state']
     return fips_dict
 
-def append_missing_zips(zccd, states_list, fips):
-    # flip state abbr list back to fips codes
-    fips_dict_invert = {v: k for k, v in fips.iteritems()}
+def append_missing_zips(zccd, states_list):
     states_fips = []
     for s in states_list:
-        states_fips.append(fips_dict_invert[s])
+        states_fips.append(STATE_TO_FIPS[s])
 
     # load zcta_county_rel, which has full entries for each state
     column_map = {
@@ -61,18 +59,18 @@ def append_missing_zips(zccd, states_list, fips):
         for z in zcta_list:
             zccd.append({
                     'zcta': z,
-                    'state_fips': fips_dict_invert[abbr],
+                    'state_fips': STATE_TO_FIPS[abbr],
                     'state_abbr': abbr,
                     'cd': '0', # at-large
                 })
 
     return zccd
 
-def fips_to_state(zccd, fips):
-    # append state abbreviation from 
+def state_fips_to_name(zccd):
+    # append state abbreviation from FIPS
     merged = {}
     for row in zccd:
-        row['state_abbr'] = fips[row['state_fips']]
+        row['state_abbr'] = FIPS_TO_STATE[row['state_fips']]
     return zccd
 
 def remove_district_padding(zccd):
@@ -87,16 +85,20 @@ def remove_district_padding(zccd):
         cleaned.append(row)
     return cleaned
 
+FIPS_TO_STATE = {}
+STATE_TO_FIPS = {}
+
 if __name__ == "__main__":
     # load state FIPS codes
-    fips = load_fips('raw/state_fips.txt')
+    FIPS_TO_STATE = load_fips('raw/state_fips.txt')
+    STATE_TO_FIPS = {v: k for k, v in FIPS_TO_STATE.iteritems()}
 
     # load national zccd file
     zccd_missing = load_zccd('raw/natl_zccd_delim.txt')
 
     # append zipcodes for at-large states
     at_large_states = ['AK', 'DE', 'MT', 'ND', 'SD', 'VT', 'WY', 'PR', 'DC']
-    zccd_complete = append_missing_zips(zccd_missing, at_large_states, fips)
+    zccd_complete = append_missing_zips(zccd_missing, at_large_states)
 
     # clean output
     zccd_cleaned = remove_district_padding(zccd_complete)
@@ -105,7 +107,7 @@ if __name__ == "__main__":
     zccd_sorted = sorted(zccd_cleaned, key=lambda k: k['state_fips'])
 
     # insert state abbreviation column
-    zccd_named = fips_to_state(zccd_sorted, fips)
+    zccd_named = state_fips_to_name(zccd_sorted)
 
     # write output
     utils.csv_writer('zccd.csv', zccd_named, ['state_fips', 'state_abbr', 'zcta', 'cd'])
