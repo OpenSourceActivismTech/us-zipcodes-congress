@@ -77,13 +77,27 @@ def remove_district_padding(zccd):
     cleaned = []
     for row in zccd:
         if row['cd'] == 'null':
-            # natl_zccd_delim includes several rows with 'null' for uninhabited areas in Maine
+            # natl_zccd_delim includes several rows with 'null' for uninhabited areas
             # skip them
             continue
         row['cd'] = str(int(row['cd']))
         # do this weird conversion to get rid of zero padding
         cleaned.append(row)
     return cleaned
+
+def sanity_check(zccd, incorrect_states_dict):
+    # there are entries which are clearly inaccurate
+    checked = []
+    for row in zccd:
+        state = row['state_abbr']
+        if state in incorrect_states_dict.keys():            
+            should_not_start_with = incorrect_states_dict[state]
+            if row['zcta'].startswith(should_not_start_with):
+                log.warning('zcta %s in %s should not start with %s, SKIPPING' % (row['zcta'], state, should_not_start_with))
+                continue
+        checked.append(row)
+    return checked
+
 
 FIPS_TO_STATE = {}
 STATE_TO_FIPS = {}
@@ -103,11 +117,14 @@ if __name__ == "__main__":
     # clean output
     zccd_cleaned = remove_district_padding(zccd_complete)
 
-    # re-sort by state FIPS code
-    zccd_sorted = sorted(zccd_cleaned, key=lambda k: k['state_fips'])
-
     # insert state abbreviation column
-    zccd_named = state_fips_to_name(zccd_sorted)
+    zccd_named = state_fips_to_name(zccd_cleaned)
+
+    # and sanity check to remove obvious outliers
+    zccd_checked = sanity_check(zccd_named, {'CO': '0'})
+
+    # re-sort by state FIPS code
+    zccd_sorted = sorted(zccd_checked, key=lambda k: k['state_fips'])
 
     # write output
-    utils.csv_writer('zccd.csv', zccd_named, ['state_fips', 'state_abbr', 'zcta', 'cd'])
+    utils.csv_writer('zccd.csv', zccd_sorted, ['state_fips', 'state_abbr', 'zcta', 'cd'])
