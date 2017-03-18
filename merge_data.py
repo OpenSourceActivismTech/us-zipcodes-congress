@@ -1,5 +1,6 @@
 import utils
 import logging
+import collections
 
 log = logging.getLogger(__name__)
 log.addHandler(logging.StreamHandler())
@@ -35,9 +36,17 @@ def append_missing_zips(zccd, states_list):
         'ZCTA5': 'zcta',
         'STATE': 'state_fips'
     }
-    all_zips = utils.load_csv_columns('raw/zcta_county_rel_10.txt', column_map)
+    all_zips_list = utils.load_csv_columns('raw/zcta_county_rel_10.txt', column_map)
+    missing_zips_states = collections.defaultdict(set)
 
-    for z in all_zips:
+    for z in all_zips_list:
+        # dedupe with a defaultdict
+        if z['state_fips'] in missing_zips_states[z['zcta']]:
+            log.error('zcta %s already in %s' % (z['zcta'], z['state_fips']))
+            continue
+        else:
+            missing_zips_states[z['zcta']].add(z['state_fips'])
+
         if z['state_fips'] in states_fips:
             zccd.append({
                 'zcta': z['zcta'],
@@ -52,7 +61,8 @@ def append_missing_zips(zccd, states_list):
         'AS': ['96799'],
         'GU': ['96910', '96913', '96915', '96916', '96917', '96921', '96928', '96929', '96931', '96932'],
         'MP': ['96950', '96951', '96952'],
-        'VI': ['00801', '00802', '00820', '00823', '00824', '00830', '00831','00841', '00840', '00850', '00851']
+        'VI': ['00801', '00802', '00820', '00823', '00824', '00830', '00831','00841', '00840', '00850', '00851'],
+        'PR': ['00981'] # not sure why this isn't in the country_rel, because there are a bunch of others listed
     }
 
     for (abbr, zcta_list) in missing_islands.items():
