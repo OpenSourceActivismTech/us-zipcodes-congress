@@ -21,6 +21,9 @@ raw/zcta_county_rel_10.txt:
 raw/state_fips.txt:
 	curl 'http://www2.census.gov/geo/docs/reference/state.txt' -o $@
 
+raw/hud_crosswalk.xlsx:
+	curl 'https://www.huduser.gov/portal/datasets/usps/ZIP_CD_122016.xlsx' -o $@
+
 # test against previously released data from Sunlight Foundation
 test: raw/old_sunlight_districts.csv
 	python test.py
