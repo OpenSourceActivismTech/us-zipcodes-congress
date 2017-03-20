@@ -11,8 +11,8 @@ There are many commercial sources of zipcode data available, and some of them in
 - Zipcodes are not area designations, they are linear routes designed for mail delivery. The US Census delineates boundaries with the [most frequently used](https://www.census.gov/geo/reference/zcta/zcta_delin_anim.html) zipcode within an tract area, but they have not released an official zipcode to ZCTA map since 2000.
 - Census ZCTAs are not an exact match to USPS zipcodes, because they are not produced for lightly populated areas. However 'in most instances the ZCTA code is the same as the ZIP Code for an area.' [US Census, 2015](https://www.census.gov/geo/reference/zctas.html)
 - In 2000, the ZCTA delineation process excluded 10,068 ZIP codes, including 2,523 ZIP Codes that served specific companies or organizations with high volumes of mail and 6,419 ZIP Codes dedicated to Post Office (PO) Box and/or general delivery addresses. [ASDC 2010](http://cber.cba.ua.edu/asdc/zip_zcta.html)
-- ZCTAs may span states and congressional districts. 'Nearly 15 percent of all ZIP codes cross congressional district boundaries.' [ZipInfo](https://www.zipinfo.com/products/cdz/cdz.htm). 'There are 153 ZIP Codes in more than one state.' [US Census, 1994](https://www.census.gov/population/www/documentation/twps0007/twps0007.html)
-- If you have the ability to look up districts from a full address or zip+4, [you should](https://sunlightfoundation.com/2012/01/19/dont-use-zipcodes/). If you are still interested in matching zipcode to US Congressional District, read 
+- ZCTAs may span states and congressional districts. 'Nearly 15 percent of all ZIP codes cross congressional district boundaries.' [ZipInfo](https://www.zipinfo.com/products/cdz/cdz.htm) 'There are 153 ZIP Codes in more than one state.' [US Census, 1994](https://www.census.gov/population/www/documentation/twps0007/twps0007.html)
+- If you have the ability to look up districts from a full address or zip+4, [you should](https://sunlightfoundation.com/2012/01/19/dont-use-zipcodes/). If you are still interested in matching zipcode to US Congressional District, read on.
 
 ## How does this work?
 
