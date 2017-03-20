@@ -74,6 +74,29 @@ def append_missing_zips(zccd, states_list):
                     'cd': '0', # at-large
                 })
 
+    # Include small zipcodes that have small populations (so no ZCTA) but are otherwise noteworthy
+    # from https://about.usps.com/who-we-are/postal-facts/fun-facts.htm
+    # There are ~2,500 others used exclusively by businesses, but we don't have a list.
+    missing_small_zips = {
+        'NY': {
+            '00501': '1', # Holtsville has IRS processing center with lowest zip
+            '00544': '1', #
+            '12345': '20' # Schenectady has GE plant with memorable zip
+            },
+        'AK': {
+            '99950': '0', # Ketchikan has highest zip 
+        }
+    }
+
+    for (abbr, zcta_cd_dict) in missing_small_zips.items():
+        for (z, cd) in zcta_cd_dict.items():
+            zccd.append({
+                    'zcta': z,
+                    'state_fips': STATE_TO_FIPS[abbr],
+                    'state_abbr': abbr,
+                    'cd': cd,
+                })
+
     return zccd
 
 def state_fips_to_name(zccd):
