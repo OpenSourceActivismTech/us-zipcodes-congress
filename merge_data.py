@@ -74,7 +74,7 @@ def append_missing_zips(zccd, states_list):
                     'cd': '0', # at-large
                 })
 
-    # Include small zipcodes that have small populations (so no ZCTA) but are otherwise noteworthy
+    # Include some zipcodes that have small populations (so no ZCTA) but are otherwise noteworthy
     # from https://about.usps.com/who-we-are/postal-facts/fun-facts.htm
     # There are ~2,500 others used exclusively by businesses, but we don't have a list.
     missing_small_zips = {
