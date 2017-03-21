@@ -2,6 +2,7 @@ import os
 import sys
 import csv
 import logging
+import collections
 
 log = logging.getLogger(__name__)
 
@@ -53,3 +54,23 @@ def load_csv_columns(filename, column_names=None, skip=0, delimiter=',', quoting
             r.append(d)
         log.info('read %d lines' % len(r))
         return r
+
+def list_key_set(data, key):
+    s = set()
+    for d in data:
+        try:
+            s.add(d[key])
+        except KeyError:
+            print d
+            break
+    return s
+
+def list_key_values(data, key):
+    c = collections.defaultdict(list)
+    for d in data:
+        try:
+            c[d[key]].append(d)
+        except KeyError:
+            print d
+            break
+    return c

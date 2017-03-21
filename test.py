@@ -1,31 +1,10 @@
-import utils
-import collections
-
-def list_key_set(data, key):
-    s = set()
-    for d in data:
-        try:
-            s.add(d[key])
-        except KeyError:
-            print d
-            break
-    return s
-
-def list_key_values(data, key):
-    c = collections.defaultdict(list)
-    for d in data:
-        try:
-            c[d[key]].append(d)
-        except KeyError:
-            print d
-            break
-    return c
+from utils import load_csv_columns, list_key_set, list_key_values
 
 if __name__ == "__main__":
     print "\t new, old"
 
-    new_data = utils.load_csv_columns('zccd.csv')
-    old_data = utils.load_csv_columns('raw/old_sunlight_districts.csv')
+    new_data = load_csv_columns('zccd.csv')
+    old_data = load_csv_columns('raw/old_sunlight_districts.csv')
     print "length", len(new_data), len(old_data)
     print
 
