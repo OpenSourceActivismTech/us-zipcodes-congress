@@ -41,7 +41,7 @@ if __name__ == "__main__":
     STATE_TO_FIPS = {v: k for k, v in FIPS_TO_STATE.iteritems()}
 
     # load HUD crosswalk file
-    zccd_hud = load_hud_crosswalk('raw/ZIP_CD_122016.xlsx')
+    zccd_hud = load_hud_crosswalk('raw/hud_crosswalk.xlsx')
 
     # sort by fips
     zccd_sorted = sorted(zccd_hud, key=lambda k: k['state_fips'])

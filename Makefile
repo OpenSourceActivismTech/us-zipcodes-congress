@@ -7,6 +7,9 @@ clean:
 zccd.csv: raw/natl_zccd_delim.txt  raw/zcta_county_rel_10.txt raw/state_fips.txt
 	python merge_data.py
 
+zccd_hud.csv: raw/hud_crosswalk.xlsx
+	python hud_crosswalk.py
+
 # Congressional districts by zip code tabulation area (ZCTA) national, comma delimited
 # NB: does not include at-large districts for AK, DE, MT, ND, SD, VT, WY, PR or DC
 raw/natl_zccd_delim.txt:
@@ -21,6 +24,8 @@ raw/zcta_county_rel_10.txt:
 raw/state_fips.txt:
 	curl 'http://www2.census.gov/geo/docs/reference/state.txt' -o $@
 
+# HUD data from Q4 2016
+# available only under USPS sublicense - see readme
 raw/hud_crosswalk.xlsx:
 	curl 'https://www.huduser.gov/portal/datasets/usps/ZIP_CD_122016.xlsx' -o $@
 
