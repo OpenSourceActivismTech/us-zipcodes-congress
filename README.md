@@ -16,7 +16,7 @@ There are many commercial sources of zipcode data available, and some of them in
 
 ## How does this work?
 
-We start with the most recent Census mapping for the 116th Congress, which includes redistricting in 2016 for FL, MN, NC and VA. It does not however include data for states and territories with at-large representation (AK, DE, MT, ND, SD, VT, WY, PR, and DC). We  add all available ZCTAs for those states as well at the US Minor Outlying Islands, using 2010 data. This is unfortunately the latest available. We de-duplicate this data, ensuring not to alter ZCTAs that span state lines. We also clean it, to remove unsightly `null` strings, and obviously incorrect values in Colorado that start with `000`.
+We start with the most recent Census mapping for the 115th Congress, which includes redistricting in 2016 for FL, MN, NC and VA. It does not however include data for states and territories with at-large representation (AK, DE, MT, ND, SD, VT, WY, PR, and DC). We  add all available ZCTAs for those states as well at the US Minor Outlying Islands, using 2010 data. This is unfortunately the latest available. We de-duplicate this data, ensuring not to alter ZCTAs that span state lines. We also clean it, to remove unsightly `null` strings, and obviously incorrect values in Colorado that start with `000`.
 
 We are left with a reasonably clean dataset. When tested against older publically available ones from the [Sunlight Foundation](https://sunlightlabs.github.io/congress/#zip-codes-to-congressional-districts]) (`RIP`) and [18F](https://github.com/18F/openFEC/blob/master/data/natl_zccd_delim.csv), we show that we are not missing any ZCTAs, and have updated 1079 out of 39435 to new congressional districts. Run `make test` to see exact changes.
 
