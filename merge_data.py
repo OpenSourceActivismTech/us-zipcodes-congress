@@ -85,6 +85,9 @@ def append_missing_zips(zccd, states_list):
             },
         'AK': {
             '99950': '0', # Ketchikan has highest zip 
+        },
+        'TX': {
+            '78599': '15' # near US-Mexico border
         }
     }
 
