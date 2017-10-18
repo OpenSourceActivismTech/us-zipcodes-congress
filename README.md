@@ -20,7 +20,7 @@ We start with the most recent Census mapping for the 116th Congress, which inclu
 
 We are left with a reasonably clean dataset. When tested against older publically available ones from the [Sunlight Foundation](https://sunlightlabs.github.io/congress/#zip-codes-to-congressional-districts]) (`RIP`) and [18F](https://github.com/18F/openFEC/blob/master/data/natl_zccd_delim.csv), we show that we are not missing any ZCTAs, and have updated 1079 out of 39435 to new congressional districts. Run `make test` to see exact changes.
 
-We have also included a crosswalk file [sourced from HUD](https://www.huduser.gov/portal/datasets/usps_crosswalk.html#codebook), parsed from Excel and split to match the format of the above file. This may be more complete, as it is derived from in the quarterly [USPS Vacancy Data](https://www.huduser.gov/portal/datasets/usps.html). It is available only for government entities and non-profit organizations related to the ["stated purpose"](https://www.huduser.gov/portal/usps/sublicense_agreement.html#statedpurpose) of the HUD Sublicensing Agreement (*measuring and forecasting neighborhood changes, assessing neighborhood needs, and measuring/assessing various HUD programs*).
+We have also included a crosswalk file [sourced from HUD](https://www.huduser.gov/portal/datasets/usps_crosswalk.html#codebook), parsed from Excel and split to match the format of the above file. This may be more complete, as it is derived from in the quarterly [USPS Vacancy Data](https://www.huduser.gov/portal/datasets/usps.html) and last updated in June 2017. It is available only for government entities and non-profit organizations related to the ["stated purpose"](https://www.huduser.gov/portal/usps/sublicense_agreement.html#statedpurpose) of the HUD Sublicensing Agreement (*measuring and forecasting neighborhood changes, assessing neighborhood needs, and measuring/assessing various HUD programs*).
 
 ## Data Sources
 
@@ -30,9 +30,10 @@ We have also included a crosswalk file [sourced from HUD](https://www.huduser.go
 - [HUD USPS ZIP code Crosswalk](https://www.huduser.gov/portal/datasets/usps_crosswalk.html#data)
 - Checked against state overlaps noted on [GIS StackExchange](http://gis.stackexchange.com/questions/53918/determining-which-us-zipcodes-map-to-more-than-one-state-or-more-than-one-city)
 
-### More about Zip codes and ZCTA
+### More about ZIP codes and ZCTA
 - US Census. How ZCTAs are Created [census.gov](https://www.census.gov/geo/reference/zctas.html)
 - USPS Fun Facts [USPS.com](https://about.usps.com/who-we-are/postal-facts/fun-facts.htm)
+- WTF Zipcodes [Ian Dees](https://github.com/iandees/wtf-zipcodes)
 - Don't Use Zip Codes Unless You Have To. [Tom Lee, Sunlight Foundation, 2012](https://sunlightfoundation.com/2012/01/19/dont-use-zipcodes/)
 - Using Zipcodes for epidemiological analysis can be harmful. [Grubesic and Matisziw, 2006](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1762013/)
 - How ZIP codes nearly masked the lead problem in Flint. [Sadler, 2016](http://theconversation.com/how-zip-codes-nearly-masked-the-lead-problem-in-flint-65626)
