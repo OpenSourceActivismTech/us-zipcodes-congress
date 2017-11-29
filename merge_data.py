@@ -81,6 +81,7 @@ def append_missing_zips(zccd, states_list):
         'NY': {
             '00501': '1', # Holtsville has IRS processing center with lowest zip
             '00544': '1', #
+            '11249': '7,12', # Williamsburg split in 2011, not reflected in census
             '12345': '20' # Schenectady has GE plant with memorable zip
             },
         'AK': {
@@ -92,13 +93,14 @@ def append_missing_zips(zccd, states_list):
     }
 
     for (abbr, zcta_cd_dict) in missing_small_zips.items():
-        for (z, cd) in zcta_cd_dict.items():
-            zccd.append({
-                    'zcta': z,
-                    'state_fips': STATE_TO_FIPS[abbr],
-                    'state_abbr': abbr,
-                    'cd': cd,
-                })
+        for (z, cd_list) in zcta_cd_dict.items():
+            for cd in cd_list.split(','):
+                zccd.append({
+                        'zcta': z,
+                        'state_fips': STATE_TO_FIPS[abbr],
+                        'state_abbr': abbr,
+                        'cd': cd,
+                    })
 
     return zccd
 
