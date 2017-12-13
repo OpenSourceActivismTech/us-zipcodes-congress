@@ -78,17 +78,20 @@ def append_missing_zips(zccd, states_list):
     # from https://about.usps.com/who-we-are/postal-facts/fun-facts.htm
     # There are ~2,500 others used exclusively by businesses, but we don't have a list.
     missing_small_zips = {
+        'AK': {
+            '99950': '0', # Ketchikan has highest zip 
+        },
         'NY': {
             '00501': '1', # Holtsville has IRS processing center with lowest zip
             '00544': '1', #
             '11249': '7,12', # Williamsburg split in 2011, not reflected in census
             '12345': '20' # Schenectady has GE plant with memorable zip
-            },
-        'AK': {
-            '99950': '0', # Ketchikan has highest zip 
         },
         'TX': {
             '78599': '15' # near US-Mexico border
+        },
+        'VA': {
+            '22350': '8' # Botanical preserve in Alexandria
         }
     }
 
