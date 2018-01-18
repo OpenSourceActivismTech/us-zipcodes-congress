@@ -24,10 +24,10 @@ raw/zcta_county_rel_10.txt:
 raw/state_fips.txt:
 	curl 'https://www2.census.gov/geo/docs/reference/state.txt' -o $@
 
-# HUD data from Q2 2017
+# HUD data from Q3 2017
 # available only under USPS sublicense - see readme
 raw/hud_crosswalk.xlsx:
-	curl 'https://www.huduser.gov/portal/datasets/usps/ZIP_CD_062017.xlsx' -o $@
+	curl 'https://www.huduser.gov/portal/datasets/usps/ZIP_CD_092017.xlsx' -o $@
 
 # test against previously released data from Sunlight Foundation
 test: raw/old_sunlight_districts.csv
