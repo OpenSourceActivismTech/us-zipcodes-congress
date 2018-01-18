@@ -63,7 +63,7 @@ def test_hud():
     # we should not be missing any hud zctas
     print "we added", len(our_zctas.difference(hud_zips))
     print "missing", len(hud_zips.difference(our_zctas))
-    print hud_zips.difference(our_zctas)
+    print sorted(list(hud_zips.difference(our_zctas)))
     print
 
     our_zcta_list = list_key_values(our_data, 'zcta')
