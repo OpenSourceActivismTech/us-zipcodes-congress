@@ -81,11 +81,16 @@ def append_missing_zips(zccd, states_list):
         'AK': {
             '99950': '0', # Ketchikan has highest zip 
         },
+        'AZ': {
+            '85001': '7', # Phoenix convention center
+            '85002': '7'  #
+        },
         'NY': {
             '00501': '1', # Holtsville has IRS processing center with lowest zip
             '00544': '1', #
             '11249': '7,12', # Williamsburg split in 2011, not reflected in census
-            '12345': '20' # Schenectady has GE plant with memorable zip
+            '12301': '20', # Schenectady has GE plant with memorable zip
+            '12345': '20'
         },
         'TX': {
             '78599': '15' # near US-Mexico border
