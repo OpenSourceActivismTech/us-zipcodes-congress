@@ -42,7 +42,7 @@ def append_missing_zips(zccd, states_list):
     for z in all_zips_list:
         # dedupe with a defaultdict
         if z['state_fips'] in missing_zips_states[z['zcta']]:
-            log.error('zcta %s already in %s' % (z['zcta'], z['state_fips']))
+            log.info('zcta %s already in %s' % (z['zcta'], z['state_fips']))
             continue
         else:
             missing_zips_states[z['zcta']].add(z['state_fips'])
@@ -139,7 +139,7 @@ def sanity_check(zccd, incorrect_states_dict):
         if state in incorrect_states_dict.keys():            
             should_not_start_with = incorrect_states_dict[state]
             if row['zcta'].startswith(should_not_start_with):
-                log.warning('zcta %s in %s should not start with %s, SKIPPING' % (row['zcta'], state, should_not_start_with))
+                log.info('zcta %s in %s should not start with %s, SKIPPING' % (row['zcta'], state, should_not_start_with))
                 continue
         checked.append(row)
     return checked
@@ -171,6 +171,7 @@ if __name__ == "__main__":
 
     # re-sort by state FIPS code
     zccd_sorted = sorted(zccd_checked, key=lambda k: k['state_fips'])
+    print "got %s ZCTA->CD mappings" % len(zccd_sorted)
 
     # write output
     utils.csv_writer('zccd.csv', zccd_sorted, ['state_fips', 'state_abbr', 'zcta', 'cd'])
