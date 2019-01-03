@@ -21,6 +21,12 @@ def load_hud_crosswalk(fn):
         stcd = sheet.cell(row_i, 1).value # formatted like STCD (FIPS, CD)
         st = stcd[:2]
         cd = stcd[2:]
+
+        if cd == '**':
+            msg = 'invalid CD for %s: %s' % (z, cd)
+            log.error(msg)
+            continue
+
         try:
             zccd.append({
                 'zip': z,
