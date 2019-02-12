@@ -4,7 +4,7 @@ clean:
 	rm -f raw/*
 	rm -f zccd.csv
 
-zccd.csv: raw/natl_zccd_delim.txt  raw/zcta_county_rel_10.txt raw/state_fips.txt
+zccd.csv: raw/natl_zccd_delim.txt  raw/zcta_county_rel_10.txt raw/state_fips.txt raw/zccd_updates.txt
 	python merge_data.py
 
 zccd_hud.csv: raw/hud_crosswalk.xlsx
@@ -14,6 +14,16 @@ zccd_hud.csv: raw/hud_crosswalk.xlsx
 # NB: does not include at-large districts for AK, DE, MT, ND, SD, VT, WY, PR or DC
 raw/natl_zccd_delim.txt:
 	curl "https://www2.census.gov/geo/relfiles/cdsld16/natl/natl_zccd_delim.txt" -o raw/natl_zccd_delim.txt
+
+# inter-censal changes to congressional districts are released only for updated states
+# necessary for CO, FL, MN, NC, PA, VA
+raw/zccd_updates.txt:
+	curl "https://www2.census.gov/geo/relfiles/cdsld18/08/zc_cd_delim_08.txt" -o raw/zc_cd_delim_08.txt
+	curl "https://www2.census.gov/geo/relfiles/cdsld16/12/zc_cd_delim_12.txt" -o raw/zc_cd_delim_12.txt
+	curl "https://www2.census.gov/geo/relfiles/cdsld18/27/zc_cd_delim_27.txt" -o raw/zc_cd_delim_27.txt
+	curl "https://www2.census.gov/geo/relfiles/cdsld16/37/zc_cd_delim_37.txt" -o raw/zc_cd_delim_37.txt
+	curl "https://www2.census.gov/geo/relfiles/cdsld18/42/zc_cd_delim_42.txt" -o raw/zc_cd_delim_42.txt
+	curl "https://www2.census.gov/geo/relfiles/cdsld16/51/zc_cd_delim_51.txt" -o raw/zc_cd_delim_51.txt
 
 # 2010 ZCTA to state & county
 # TODO, try to find an updated version
@@ -27,7 +37,7 @@ raw/state_fips.txt:
 # HUD data from Q4 2018
 # available only under USPS sublicense - see readme
 raw/hud_crosswalk.xlsx:
-	curl 'https://www.huduser.gov/portal/datasets/usps/ZIP_CD_092018.xlsx' -o $@
+	curl 'https://www.huduser.gov/portal/datasets/usps/ZIP_CD_122018.xlsx' -o $@
 
 # test against previously released data from Sunlight Foundation
 test: raw/old_sunlight_districts.csv

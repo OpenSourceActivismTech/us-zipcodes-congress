@@ -9,7 +9,8 @@ def load_zccd(fn):
     column_map = {
         'State': 'state_fips',
         'ZCTA': 'zcta',
-        'Congressional District': 'cd'
+        'Congressional District': 'cd',
+        'CongressionalDistrict': 'cd' # different spellings in natl and state specific files...
     }
 
     zccd = utils.load_csv_columns(fn, column_map, skip=1)
@@ -25,6 +26,20 @@ def load_fips(fn):
     for row in fips_data:
         fips_dict[row['state_fips']] = row['state']
     return fips_dict
+
+def replace_state_zips(zccd, state_updates):
+    state_fips_to_update = []
+    for s in state_updates.keys():
+        state_fips_to_update.append(STATE_TO_FIPS[s])
+
+    # remove existing data for updated states
+    zccd[:] = [z for z in zccd if z['state_fips'] not in state_fips_to_update]
+    # works in place
+
+    for state_zips in state_updates.values():
+        zccd.extend(state_zips)
+
+    return zccd
 
 def append_missing_zips(zccd, states_list):
     states_fips = []
@@ -156,9 +171,20 @@ if __name__ == "__main__":
     # load national zccd file
     zccd_missing = load_zccd('raw/natl_zccd_delim.txt')
 
+    # update for inter-censal changes
+    zccd_updated = replace_state_zips(zccd_missing,
+        {'CO': load_zccd('raw/zc_cd_delim_08.txt'),
+         'FL': load_zccd('raw/zc_cd_delim_12.txt'),
+         'MN': load_zccd('raw/zc_cd_delim_27.txt'),
+         'NC': load_zccd('raw/zc_cd_delim_37.txt'),
+         'PA': load_zccd('raw/zc_cd_delim_42.txt'),
+         'VA': load_zccd('raw/zc_cd_delim_51.txt'),
+        }
+    )
+
     # append zipcodes for at-large states
     at_large_states = ['AK', 'DE', 'MT', 'ND', 'SD', 'VT', 'WY', 'PR', 'DC']
-    zccd_complete = append_missing_zips(zccd_missing, at_large_states)
+    zccd_complete = append_missing_zips(zccd_updated, at_large_states)
 
     # clean output
     zccd_cleaned = remove_district_padding(zccd_complete)
