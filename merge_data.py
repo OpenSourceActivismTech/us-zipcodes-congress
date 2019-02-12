@@ -170,7 +170,7 @@ if __name__ == "__main__":
     zccd_checked = sanity_check(zccd_named, {'CO': '0'})
 
     # re-sort by state FIPS code
-    zccd_sorted = sorted(zccd_checked, key=lambda k: (k['state_fips'], k['zcta']))
+    zccd_sorted = sorted(zccd_checked, key=lambda k: (k['state_fips'], k['zcta'], k['cd']))
     print "got %s ZCTA->CD mappings" % len(zccd_sorted)
 
     # write output

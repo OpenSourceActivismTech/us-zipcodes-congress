@@ -50,7 +50,7 @@ if __name__ == "__main__":
     zccd_hud = load_hud_crosswalk('raw/hud_crosswalk.xlsx')
 
     # sort by fips
-    zccd_sorted = sorted(zccd_hud, key=lambda k: (k['state_fips'], k['zip']))
+    zccd_sorted = sorted(zccd_hud, key=lambda k: (k['state_fips'], k['zip'], k['cd']))
 
     # write output
     utils.csv_writer('zccd_hud.csv', zccd_sorted, ['state_fips', 'state_abbr', 'zip', 'cd'])
