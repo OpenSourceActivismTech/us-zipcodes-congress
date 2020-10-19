@@ -197,7 +197,7 @@ if __name__ == "__main__":
 
     # re-sort by state FIPS code
     zccd_sorted = sorted(zccd_checked, key=lambda k: (k['state_fips'], k['zcta'], k['cd']))
-    print "got %s ZCTA->CD mappings" % len(zccd_sorted)
+    print("got %s ZCTA->CD mappings" % len(zccd_sorted))
 
     # write output
     utils.csv_writer('zccd.csv', zccd_sorted, ['state_fips', 'state_abbr', 'zcta', 'cd'])

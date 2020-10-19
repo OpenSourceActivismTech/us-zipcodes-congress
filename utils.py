@@ -9,7 +9,7 @@ log = logging.getLogger(__name__)
 def csv_reader_converter(utf8_data, dialect=csv.excel, **kwargs):
     csv_reader = csv.reader(utf8_data, dialect=dialect, **kwargs)
     for row in csv_reader:
-        yield [unicode(cell, 'latin-1') for cell in row]
+        yield [cell for cell in row]
 
 def csv_writer(filename, data, fields=None, delimiter=',', quoting=csv.QUOTE_MINIMAL):
     log.info('writing', filename)
@@ -61,7 +61,7 @@ def list_key_set(data, key):
         try:
             s.add(d[key])
         except KeyError:
-            print d
+            print(d)
             break
     return s
 
@@ -71,6 +71,6 @@ def list_key_values(data, key):
         try:
             c[d[key]].append(d)
         except KeyError:
-            print d
+            print(d)
             break
     return c

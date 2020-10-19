@@ -16,7 +16,7 @@ def load_hud_crosswalk(fn):
     sheet = book.sheet_by_index(0)
 
     zccd = []
-    for row_i in xrange(1, sheet.nrows):
+    for row_i in range(1, sheet.nrows):
         z = sheet.cell(row_i, 0).value
         stcd = sheet.cell(row_i, 1).value # formatted like STCD (FIPS, CD)
         st = stcd[:2]
@@ -34,7 +34,7 @@ def load_hud_crosswalk(fn):
                 'state_abbr': FIPS_TO_STATE[st],
                 'cd': str(int(cd)) # string conversion to drop leading zero
             })
-        except Exception,e:
+        except (Exception,e):
             msg = 'unable to convert CD for %s: %s' % (z, stcd)
             log.error(msg)
             continue
@@ -44,7 +44,7 @@ def load_hud_crosswalk(fn):
 if __name__ == "__main__":
     # load state FIPS codes
     FIPS_TO_STATE = load_fips('raw/state_fips.txt')
-    STATE_TO_FIPS = {v: k for k, v in FIPS_TO_STATE.iteritems()}
+    STATE_TO_FIPS = {v: k for k, v in FIPS_TO_STATE.items()}
 
     # load HUD crosswalk file
     zccd_hud = load_hud_crosswalk('raw/hud_crosswalk.xlsx')
