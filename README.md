@@ -16,7 +16,7 @@ There are many commercial sources of zipcode data available, and some of them in
 
 ## How does this work?
 
-We start with the most recent Census mapping for the 115th Congress, which includes redistricting in 2016 for FL, MN, NC and VA. It does not however include data for states and territories with at-large representation (AK, DE, MT, ND, SD, VT, WY, PR, and DC). We  add all available ZCTAs for those states as well at the US Minor Outlying Islands, using 2010 data. This is unfortunately the latest available. We de-duplicate this data, ensuring not to alter ZCTAs that span state lines. We also clean it, to remove unsightly `null` strings, and obviously incorrect values in Colorado that start with `000`.
+We start with the most recent 2020 Census tabulation blocks, which [includes redistricting for the 118th Congress](https://www.census.gov/geographies/mapping-files/2023/dec/rdo/118-congressional-district-bef.html) as submitted on December 16, 2022. We match these to zipcodes through the ZCTA relationship. We de-duplicate these, ensuring not to alter ZCTAs that span state lines. We also clean them, to remove unsightly `null` strings, and rename at-large districts from `98` to `0`.
 
 We are left with a reasonably clean dataset. When tested against older publically available ones from the [Sunlight Foundation](https://sunlightlabs.github.io/congress/#zip-codes-to-congressional-districts]) (`RIP`) and [18F](https://github.com/18F/openFEC/blob/master/data/natl_zccd_delim.csv), we show that we are not missing any ZCTAs, and have updated 1079 out of 39435 to new congressional districts. Run `make test` to see exact changes.
 
@@ -24,9 +24,8 @@ We have also included a crosswalk file [sourced from HUD](https://www.huduser.go
 
 ## Data Sources
 
-- [2016 US Gazetteer](https://www.census.gov/geo/maps-data/data/gazetteer2016.html)
-- [2010 ZCTA Relationships](https://www.census.gov/geo/maps-data/data/zcta_rel_overview.html)
-- [Guam Zip Codes](http://mcog.guam.gov/guam_zip_codes.html)
+- [2020 US Census Block Equivalency Files](https://www.census.gov/geographies/mapping-files/2023/dec/rdo/118-congressional-district-bef.html)
+- [2020 US Census ZIP Code Tabulation Areas (ZCTAs) Relationship Files](https://www.census.gov/geographies/reference-files/time-series/geo/relationship-files.html#zctacomp)
 - [HUD USPS ZIP code Crosswalk](https://www.huduser.gov/portal/datasets/usps_crosswalk.html#data)
 - Checked against state overlaps noted on [GIS StackExchange](http://gis.stackexchange.com/questions/53918/determining-which-us-zipcodes-map-to-more-than-one-state-or-more-than-one-city)
 

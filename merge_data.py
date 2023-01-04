@@ -1,20 +1,34 @@
 import utils
 import logging
-import collections
+import sys
 
 log = logging.getLogger(__name__)
-log.addHandler(logging.StreamHandler())
+log.addHandler(logging.StreamHandler(sys.stdout))
+log.setLevel(logging.WARNING)
 
-def load_zccd(fn):
+def load_districts(fn):
     column_map = {
-        'State': 'state_fips',
-        'ZCTA': 'zcta',
-        'Congressional District': 'cd',
-        'CongressionalDistrict': 'cd' # different spellings in natl and state specific files...
+        'GEOID': 'tract',
+        'CDFP': 'cd',
     }
 
-    zccd = utils.load_csv_columns(fn, column_map, skip=1)
-    return zccd
+    tract_list = utils.load_csv_columns(fn, column_map)
+    # trim tract to block geoid, so we can use dict for faster lookup
+    for tract in tract_list:
+        tract['block'] = tract['tract'][:-4]
+
+    blocks = utils.list_key_values(tract_list, 'block')
+    return blocks
+
+def load_tracts(fn):
+    column_map = {
+        'GEOID_TRACT_20': 'tract',
+        'GEOID_ZCTA5_20': 'zcta',
+    }
+
+    tracts_list = utils.load_csv_columns(fn, column_map, delimiter='|')
+    zcta = utils.list_key_values(tracts_list, 'zcta')
+    return zcta
 
 def load_fips(fn):
     column_map = {
@@ -27,109 +41,27 @@ def load_fips(fn):
         fips_dict[row['state_fips']] = row['state']
     return fips_dict
 
-def replace_state_zips(zccd, state_updates):
-    state_fips_to_update = []
-    for s in state_updates.keys():
-        state_fips_to_update.append(STATE_TO_FIPS[s])
-
-    # remove existing data for updated states
-    zccd[:] = [z for z in zccd if z['state_fips'] not in state_fips_to_update]
-    # works in place
-
-    for state_zips in state_updates.values():
-        zccd.extend(state_zips)
-
-    return zccd
-
-def append_missing_zips(zccd, states_list):
-    states_fips = []
-    for s in states_list:
-        states_fips.append(STATE_TO_FIPS[s])
-
-    # load zcta_county_rel, which has full entries for each state
-    column_map = {
-        'ZCTA5': 'zcta',
-        'STATE': 'state_fips'
-    }
-    all_zips_list = utils.load_csv_columns('raw/zcta_county_rel_10.txt', column_map)
-    missing_zips_states = collections.defaultdict(set)
-
-    for z in all_zips_list:
-        # dedupe with a defaultdict
-        if z['state_fips'] in missing_zips_states[z['zcta']]:
-            log.info('zcta %s already in %s' % (z['zcta'], z['state_fips']))
+def merge_by_tract(cd_dict, zcta_dict):
+    merged = []
+    for (zcta, zcta_row) in zcta_dict.items():
+        if not zcta:
+            # skip initial blanks
             continue
-        else:
-            missing_zips_states[z['zcta']].add(z['state_fips'])
 
-        if z['state_fips'] in states_fips:
-            zccd.append({
-                'zcta': z['zcta'],
-                'state_fips': z['state_fips'],
-                'cd': '0' # at-large
-            })
+        tract = zcta_row[0]['tract']
 
-    # also include zipcodes from US Minor and Outlying Islands
-    # which are not included in the zcta_county_rel file
-    # these are copied from govt websites as available
-    missing_islands = {
-        'AS': ['96799'],
-        'GU': ['96910', '96913', '96915', '96916', '96917', '96921', '96928', '96929', '96931', '96932'],
-        'MP': ['96950', '96951', '96952'],
-        'VI': ['00801', '00802', '00820', '00823', '00824', '00830', '00831','00841', '00840', '00850', '00851'],
-        'PR': ['00981'] # not sure why this isn't in the country_rel, because there are a bunch of others listed
-    }
+        matched_cds = cd_dict[tract]
+        matched_list = list(m['cd'] for m in matched_cds)
+        matched_unique = list(set(matched_list))
 
-    for (abbr, zcta_list) in missing_islands.items():
-        for z in zcta_list:
-            zccd.append({
-                    'zcta': z,
-                    'state_fips': STATE_TO_FIPS[abbr],
-                    'state_abbr': abbr,
-                    'cd': '0', # at-large
-                })
-
-    # Include some zipcodes that have small populations (so no ZCTA) but are otherwise noteworthy
-    # from https://about.usps.com/who-we-are/postal-facts/fun-facts.htm
-    # There are ~2,500 others used exclusively by businesses, but we don't have a list.
-    missing_small_zips = {
-        'AK': {
-            '99950': '0', # Ketchikan has highest zip 
-        },
-        'AZ': {
-            '85001': '7', # Phoenix convention center
-            '85002': '7'  #
-        },
-        'NY': {
-            '00501': '1', # Holtsville has IRS processing center with lowest zip
-            '00544': '1', #
-            '11249': '7,12', # Williamsburg split in 2011, not reflected in census
-            '12301': '20', # Schenectady has GE plant with memorable zip
-            '12345': '20'
-        },
-        'TX': {
-            '78599': '15' # near US-Mexico border
-        },
-        'VA': {
-            '22350': '8' # Botanical preserve in Alexandria
-        }
-    }
-
-    for (abbr, zcta_cd_dict) in missing_small_zips.items():
-        for (z, cd_list) in zcta_cd_dict.items():
-            for cd in cd_list.split(','):
-                zccd.append({
-                        'zcta': z,
-                        'state_fips': STATE_TO_FIPS[abbr],
-                        'state_abbr': abbr,
-                        'cd': cd,
-                    })
-
-    return zccd
+        for matched_cd in matched_unique:
+            new_zcta = {'zcta': zcta, 'cd': matched_cd, 'state_fips': tract[:2]}
+            log.info(new_zcta)
+            merged.append(new_zcta)
+    return merged
 
 def state_fips_to_name(zccd):
     # append state abbreviation from FIPS
-    merged = {}
     for row in zccd:
         row['state_abbr'] = FIPS_TO_STATE[row['state_fips']]
     return zccd
@@ -137,10 +69,15 @@ def state_fips_to_name(zccd):
 def remove_district_padding(zccd):
     cleaned = []
     for row in zccd:
-        if row['cd'] == 'null':
-            # natl_zccd_delim includes several rows with 'null' for uninhabited areas
-            # skip them
+        if row['cd'] in ['null', '', 'ZZ']:
+            # skip empty rows
+            # ZZ means mostly water
             continue
+
+        # non-voting districts are noted as 98 in census, but 0 in other sources
+        if row['cd'] == '98':
+            row['cd'] = 0
+
         row['cd'] = str(int(row['cd']))
         # do this weird conversion to get rid of zero padding
         cleaned.append(row)
@@ -166,38 +103,33 @@ STATE_TO_FIPS = {}
 if __name__ == "__main__":
     # load state FIPS codes
     FIPS_TO_STATE = load_fips('raw/state_fips.txt')
-    STATE_TO_FIPS = {v: k for k, v in FIPS_TO_STATE.iteritems()}
+    STATE_TO_FIPS = {v: k for k, v in FIPS_TO_STATE.items()}
 
-    # load national zccd file
-    zccd_missing = load_zccd('raw/natl_zccd_delim.txt')
+    # load national tract file
+    tract_to_zcta = load_tracts('raw/zcta520_tract20_natl.txt')
+    zccd_national = []
 
-    # update for inter-censal changes
-    zccd_updated = replace_state_zips(zccd_missing,
-        {'CO': load_zccd('raw/zc_cd_delim_08.txt'),
-         'FL': load_zccd('raw/zc_cd_delim_12.txt'),
-         'MN': load_zccd('raw/zc_cd_delim_27.txt'),
-         'NC': load_zccd('raw/zc_cd_delim_37.txt'),
-         'PA': load_zccd('raw/zc_cd_delim_42.txt'),
-         'VA': load_zccd('raw/zc_cd_delim_51.txt'),
-        }
-    )
+    for (state,fips) in STATE_TO_FIPS.items():
+        # load statewide districts file
+        cd_to_tract = load_districts(f"raw/cd118/{fips}_{state}_CD118.txt")
 
-    # append zipcodes for at-large states
-    at_large_states = ['AK', 'DE', 'MT', 'ND', 'SD', 'VT', 'WY', 'PR', 'DC']
-    zccd_complete = append_missing_zips(zccd_updated, at_large_states)
+        # merge by the tract geoid
+        zccd = merge_by_tract(cd_to_tract, tract_to_zcta)
 
-    # clean output
-    zccd_cleaned = remove_district_padding(zccd_complete)
+        # clean output
+        zccd_cleaned = remove_district_padding(zccd)
 
-    # insert state abbreviation column
-    zccd_named = state_fips_to_name(zccd_cleaned)
+        # insert state abbreviation column
+        zccd_named = state_fips_to_name(zccd_cleaned)
 
-    # and sanity check to remove obvious outliers
-    zccd_checked = sanity_check(zccd_named, {'CO': '0'})
+        print("got %s ZCTA->CD mappings for %s" % (len(zccd_named), state))
+        zccd_national.extend(zccd_named)
+
+    print("got %s ZCTA->CD mappings for %s" % (len(zccd_national), 'national'))
 
     # re-sort by state FIPS code
-    zccd_sorted = sorted(zccd_checked, key=lambda k: (k['state_fips'], k['zcta'], k['cd']))
-    print("got %s ZCTA->CD mappings" % len(zccd_sorted))
+    zccd_sorted = sorted(zccd_national, key=lambda k: (k['state_fips'], k['zcta'], k['cd']))
 
+        
     # write output
-    utils.csv_writer('zccd.csv', zccd_sorted, ['state_fips', 'state_abbr', 'zcta', 'cd'])
+    utils.csv_writer('zccd.csv', zccd_national, ['state_fips', 'state_abbr', 'zcta', 'cd'])
