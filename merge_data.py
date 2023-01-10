@@ -48,14 +48,18 @@ def merge_by_tract(cd_dict, zcta_dict):
             # skip initial blanks
             continue
 
-        tract = zcta_row[0]['tract']
+        tracts = set(entry['tract'] for entry in zcta_row)
 
-        matched_cds = cd_dict[tract]
-        matched_list = list(m['cd'] for m in matched_cds)
+        matched_list = []
+        for tract in tracts:
+            matched_cds = cd_dict[tract]
+            state_fips = tract[:2]
+            matched_list.extend(f"{state_fips}-{m['cd']}" for m in matched_cds)
         matched_unique = list(set(matched_list))
 
         for matched_cd in matched_unique:
-            new_zcta = {'zcta': zcta, 'cd': matched_cd, 'state_fips': tract[:2]}
+            (state_fips, cd_id) = matched_cd.split('-')
+            new_zcta = {'zcta': zcta, 'cd': cd_id, 'state_fips': state_fips}
             log.info(new_zcta)
             merged.append(new_zcta)
     return merged
