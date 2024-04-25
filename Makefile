@@ -26,7 +26,7 @@ raw/state_fips.txt:
 # HUD data from Q4 2021
 # available only under USPS sublicense - see readme
 raw/hud_crosswalk.xlsx:
-	curl 'https://www.huduser.gov/portal/datasets/usps/ZIP_CD_122021.xlsx' -o $@
+	curl 'https://www.huduser.gov/apps/public/uspscrosswalk/download_file/ZIP_CD_032024.xlsx' -o $@
 
 # test against previously released data from Sunlight Foundation
 test: raw/old_sunlight_districts.csv
