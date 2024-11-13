@@ -1,6 +1,6 @@
 import utils
 import logging
-import sys
+import glob, sys
 
 log = logging.getLogger(__name__)
 log.addHandler(logging.StreamHandler(sys.stdout))
@@ -113,9 +113,10 @@ if __name__ == "__main__":
     tract_to_zcta = load_tracts('raw/zcta520_tract20_natl.txt')
     zccd_national = []
 
-    for (state,fips) in STATE_TO_FIPS.items():
-        # load statewide districts file
-        cd_to_tract = load_districts(f"raw/cd118/{fips}_{state}_CD118.txt")
+    zccd_files = glob.glob('raw/cd119/*.txt')
+    for filename in zccd_files:
+        # load district file
+        cd_to_tract = load_districts(filename)
 
         # merge by the tract geoid
         zccd = merge_by_tract(cd_to_tract, tract_to_zcta)
@@ -126,7 +127,7 @@ if __name__ == "__main__":
         # insert state abbreviation column
         zccd_named = state_fips_to_name(zccd_cleaned)
 
-        print("got %s ZCTA->CD mappings for %s" % (len(zccd_named), state))
+        print("got %s ZCTA->CD mappings for %s" % (len(zccd_named), filename))
         zccd_national.extend(zccd_named)
 
     print("got %s ZCTA->CD mappings for %s" % (len(zccd_national), 'national'))
@@ -134,6 +135,5 @@ if __name__ == "__main__":
     # re-sort by state FIPS code
     zccd_sorted = sorted(zccd_national, key=lambda k: (k['state_fips'], k['zcta'], k['cd']))
 
-        
     # write output
-    utils.csv_writer('zccd.csv', zccd_national, ['state_fips', 'state_abbr', 'zcta', 'cd'])
+    utils.csv_writer('zccd.csv', zccd_sorted, ['state_fips', 'state_abbr', 'zcta', 'cd'])

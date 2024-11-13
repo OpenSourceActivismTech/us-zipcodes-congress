@@ -1,19 +1,19 @@
 all: clean zccd.csv
 
 clean:
-	rm -f raw/*
+	rm -rf raw/*
 	rm -f zccd.csv
 
-zccd.csv: raw/cd118 raw/zcta520_tract20_natl.txt raw/state_fips.txt
+zccd.csv: raw/cd119 raw/zcta520_tract20_natl.txt raw/state_fips.txt
 	python merge_data.py
 
 zccd_hud.csv: raw/hud_crosswalk.xlsx
 	python hud_crosswalk.py
 
-# Districts for 118th Congress, post redistricting
-raw/cd118:
-	curl "https://www2.census.gov/programs-surveys/decennial/rdo/mapping-files/2023/118-congressional-district-bef/cd118.zip" -o raw/cd118.zip
-	unzip raw/cd118.zip -d raw/cd118
+# Districts for 119th Congress
+raw/cd119:
+	curl "https://www2.census.gov/programs-surveys/decennial/rdo/mapping-files/2025/119-congressional-district-befs/cd119.zip" -o raw/cd119.zip
+	unzip raw/cd119.zip -d raw/cd119
 
 # 2020 ZCTA to census block
 raw/zcta520_tract20_natl.txt:
