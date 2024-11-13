@@ -113,7 +113,8 @@ if __name__ == "__main__":
     tract_to_zcta = load_tracts('raw/zcta520_tract20_natl.txt')
     zccd_national = []
 
-    zccd_files = glob.glob('raw/cd119/*.txt')
+    zccd_files = sorted(glob.glob('raw/cd119/*.txt'), reverse=True)
+    # process in reverse alpha order, so we get national first
     for filename in zccd_files:
         # load district file
         cd_to_tract = load_districts(filename)
@@ -130,10 +131,27 @@ if __name__ == "__main__":
         print("got %s ZCTA->CD mappings for %s" % (len(zccd_named), filename))
         zccd_national.extend(zccd_named)
 
-    print("got %s ZCTA->CD mappings for %s" % (len(zccd_national), 'national'))
+    # now we have some duplicates between the national and state mappings
+    # merge using a set with key like "zcta-cd"
+    print("deduplicating state and national mappings")
+    zccd_set = set()
+    for zccd in zccd_national:
+        # print(zccd)
+        zccd_set.add(f"{zccd['zcta']}-{zccd['cd']}")
+    # print(zccd_set)
+    zccd_unique = []
+    for key in zccd_set:
+        # split the key and look up in national list
+        zcta,cd = key.split('-')
+        # take first matching entry
+        zccd_match = list(filter(lambda z: z['zcta'] == zcta and z['cd'] == cd, zccd_national))
+        if zccd_match:
+            zccd_unique.append(zccd_match[0])
+
+    print("got %s ZCTA->CD mappings for %s" % (len(zccd_unique), 'national'))
 
     # re-sort by state FIPS code
-    zccd_sorted = sorted(zccd_national, key=lambda k: (k['state_fips'], k['zcta'], k['cd']))
+    zccd_sorted = sorted(zccd_unique, key=lambda k: (k['state_fips'], k['zcta'], k['cd']))
 
     # write output
     utils.csv_writer('zccd.csv', zccd_sorted, ['state_fips', 'state_abbr', 'zcta', 'cd'])
