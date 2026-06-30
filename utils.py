@@ -26,11 +26,11 @@ def csv_writer(filename, data, fields=None, delimiter=',', quoting=csv.QUOTE_MIN
             rows += 1
     log.info('wrote %d rows' % rows)
 
-def load_csv_columns(filename, column_names=None, skip=0, delimiter=',', quoting=csv.QUOTE_MINIMAL):
+def load_csv_columns(filename, column_names=None, skip=0, delimiter=',', quoting=csv.QUOTE_MINIMAL, **kwargs):
     r = []
     log.info('opening %s' % filename)
     try:
-        with open(filename, 'r') as f:
+        with open(filename, 'r', **kwargs) as f:
             data_file = csv_reader_converter(f, delimiter=delimiter, quoting=quoting)
             for i in range(skip):
                 next(data_file)
